@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Clue 1 – Your First Riddle 💭</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: url('https://upload.wikimedia.org/wikipedia/commons/6/6e/Parchment_Paper_Texture.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Playfair Display', serif;
+      color: #4b2e2e;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+
+    input {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 18px;
+      width: 80%;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 24px;
+      font-size: 18px;
+      background-color: #a67b5b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #8B5C3B;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-size: 18px;
+      color: crimson;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Clue #1 💭</h2>
+    <p>
+      We’ve never needed a map or plan, <br>
+      You found me when no one else can. <br>
+      I may not be perfect, but you still stay — <br>
+      What’s the word I hear when you call me each day? 💌
+    </p>
+
+    <input type="text" id="answer" placeholder="Type your answer here..." />
+    <br>
+    <button onclick="checkAnswer()">Submit</button>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    function checkAnswer() {
+      const input = document.getElementById("answer").value.trim().toLowerCase();
+      const message = document.getElementById("message");
+      if (input === "potti") {
+        window.location.href = "clue2.html"; // Next clue
+      } else {
+        message.textContent = "pottooodaaaa! Malli try chey alochinchuuu🥺❤️";
+      }
+    }
+  </script>
+
+</body>
+</html>

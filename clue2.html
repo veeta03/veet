@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Clue 2: Fix the Broken Heart</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+    }
+    h2 {
+      margin-top: 30px;
+    }
+    #puzzle-board {
+      position: relative;
+      width: 600px;
+      height: 600px;
+      margin: 20px auto;
+      border: 2px dashed #666;
+    }
+    .piece {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      cursor: grab;
+      transition: box-shadow 0.3s ease;
+    }
+    .piece:hover {
+      animation: glow 1s infinite alternate;
+    }
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px #ff8eb5;
+      }
+      to {
+        box-shadow: 0 0 20px #ff0033;
+      }
+    }
+    #success {
+      display: none;
+      font-size: 1.5rem;
+      margin-top: 20px;
+    }
+    a {
+      color: #66b3ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>💔 Clue 2: Fix the Broken Heart 💔</h2>
+  <p>Drag and place the heart pieces correctly to complete it.</p>
+
+  <div id="puzzle-board"></div>
+
+  <div id="success">
+    💖 You fixed my heart!<br>
+    <a href="clue3.html">Go to the next clue</a>
+  </div>
+
+  <script>
+    const board = document.getElementById("puzzle-board");
+    const totalPieces = 6;
+    let placedPieces = 0;
+
+    const correctPositions = [
+      { x: 0, y: 0 },
+      { x: 200, y: 0 },
+      { x: 400, y: 0 },
+      { x: 0, y: 200 },
+      { x: 200, y: 200 },
+      { x: 400, y: 200 }
+    ];
+
+    const indexes = [...Array(totalPieces).keys()].sort(() => Math.random() - 0.5);
+
+    indexes.forEach(index => {
+      const img = document.createElement('img');
+      img.src = `pieces/heart${index + 1}.png`;
+      img.classList.add('piece');
+
+      // Random initial positions
+      img.style.left = `${Math.random() * 400}px`;
+      img.style.top = `${Math.random() * 300 + 280}px`;
+
+      img.dataset.correctX = correctPositions[index].x;
+      img.dataset.correctY = correctPositions[index].y;
+
+      makeDraggable(img);
+      board.appendChild(img);
+    });
+
+    function makeDraggable(el) {
+      let offsetX, offsetY, isDragging = false;
+
+      el.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+        el.style.zIndex = 1000;
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          const boardRect = board.getBoundingClientRect();
+          let x = e.clientX - boardRect.left - offsetX;
+          let y = e.clientY - boardRect.top - offsetY;
+
+          // Keep it within board
+          x = Math.max(0, Math.min(board.clientWidth - el.clientWidth, x));
+          y = Math.max(0, Math.min(board.clientHeight - el.clientHeight, y));
+
+          el.style.left = `${x}px`;
+          el.style.top = `${y}px`;
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+
+        const currentX = parseInt(el.style.left);
+        const currentY = parseInt(el.style.top);
+        const correctX = parseInt(el.dataset.correctX);
+        const correctY = parseInt(el.dataset.correctY);
+
+        if (Math.abs(currentX - correctX) < 40 && Math.abs(currentY - correctY) < 40) {
+          el.style.left = `${correctX}px`;
+          el.style.top = `${correctY}px`;
+          el.style.pointerEvents = "none";
+          el.style.cursor = "default";
+          placedPieces++;
+        }
+
+        if (placedPieces === totalPieces) {
+          document.getElementById("success").style.display = "block";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

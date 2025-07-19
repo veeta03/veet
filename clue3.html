@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clue 3 - The Hidden Keys</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(#ffe0e6, #fff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #d63384;
+      text-shadow: 1px 1px white;
+      margin-bottom: 10px;
+    }
+
+    .chits {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .chit {
+      background: #fff0f5;
+      border: 2px dashed #ff69b4;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1rem;
+      max-width: 220px;
+      box-shadow: 0 0 10px #ffb6c1;
+      transition: all 0.3s ease;
+    }
+
+    .chit.removed {
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .keyboard {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+      max-width: 500px;
+      margin-top: 30px;
+    }
+
+    .key {
+      padding: 10px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px #aaa;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .key:hover {
+      background: #ffd6e0;
+    }
+
+    .message {
+      margin-top: 30px;
+      font-size: 1.4rem;
+      color: green;
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .keyboard {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧩 Clue 3: The Hidden Keys</h1>
+  <p>Tap the right keys on the keyboard to solve the riddles!</p>
+
+  <div class="chits">
+    <div class="chit" id="chit1">You try to leave me, but I always stay... unless you press me.</div>
+    <div class="chit" id="chit2">Two of me can take control.</div>
+    <div class="chit" id="chit3">You always use me when you want to start over.</div>
+  </div>
+
+  <div class="keyboard" id="keyboard"></div>
+
+  <div class="message" id="message">🎉 You solved it! Ready for Clue 4! 💖</div>
+
+  <script>
+    const correctAnswers = {
+      "Esc": "chit1",
+      "Ctrl": "chit2",
+      "Backspace": "chit3"
+    };
+
+    const keys = [
+      "Esc", "Tab", "CapsLock", "Shift", "Ctrl", "Alt", "Enter", "Backspace", "Del", "Home",
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+      "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+      "U", "V", "W", "X", "Y", "Z", "1", "2", "3", "4",
+      "5", "6", "7", "8", "9", "0", "Space", ",", ".", "/"
+    ];
+
+    const keyboard = document.getElementById("keyboard");
+    const message = document.getElementById("message");
+
+    keys.forEach(key => {
+      const btn = document.createElement("div");
+      btn.className = "key";
+      btn.innerText = key;
+      btn.addEventListener("click", () => checkKey(key));
+      keyboard.appendChild(btn);
+    });
+
+    function checkKey(key) {
+      if (correctAnswers[key]) {
+        const chit = document.getElementById(correctAnswers[key]);
+        if (chit && !chit.classList.contains("removed")) {
+          chit.classList.add("removed");
+        }
+
+        delete correctAnswers[key];
+
+        if (Object.keys(correctAnswers).length === 0) {
+          message.style.display = "block";
+          setTimeout(() => {
+            window.location.href = "clue4.html"; // Change this if you want
+          }, 3000);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
