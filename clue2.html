@@ -1,144 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Clue 2: Fix the Broken Heart</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clue 2 - Puzzle Heart</title>
   <style>
     body {
-      background-color: #111;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fff0f5;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    h1 {
       text-align: center;
-    }
-    h2 {
-      margin-top: 30px;
-    }
-    #puzzle-board {
-      position: relative;
-      width: 600px;
-      height: 600px;
-      margin: 20px auto;
-      border: 2px dashed #666;
-    }
-    .piece {
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      cursor: grab;
-      transition: box-shadow 0.3s ease;
-    }
-    .piece:hover {
-      animation: glow 1s infinite alternate;
-    }
-    @keyframes glow {
-      from {
-        box-shadow: 0 0 10px #ff8eb5;
-      }
-      to {
-        box-shadow: 0 0 20px #ff0033;
-      }
-    }
-    #success {
-      display: none;
-      font-size: 1.5rem;
+      color: #d6336c;
       margin-top: 20px;
+      font-size: 2em;
     }
-    a {
-      color: #66b3ff;
-      text-decoration: none;
+
+    #puzzle-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .piece {
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      cursor: grab;
+      transition: transform 0.2s ease;
+    }
+
+    .piece:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 10px pink);
+    }
+
+    @media (max-width: 768px) {
+      .piece {
+        width: 80px;
+        height: 80px;
+      }
     }
   </style>
 </head>
 <body>
-
-  <h2>💔 Clue 2: Fix the Broken Heart 💔</h2>
-  <p>Drag and place the heart pieces correctly to complete it.</p>
-
-  <div id="puzzle-board"></div>
-
-  <div id="success">
-    💖 You fixed my heart!<br>
-    <a href="clue3.html">Go to the next clue</a>
+  <h1>Put My Heart Back Together 💖</h1>
+  <div id="puzzle-container">
+    <img src="pieces/piece1.png" class="piece" style="top: 10%; left: 10%;">
+    <img src="pieces/piece2.png" class="piece" style="top: 20%; left: 50%;">
+    <img src="pieces/piece3.png" class="piece" style="top: 50%; left: 20%;">
+    <img src="pieces/piece4.png" class="piece" style="top: 30%; left: 70%;">
+    <img src="pieces/piece5.png" class="piece" style="top: 60%; left: 40%;">
+    <img src="pieces/piece6.png" class="piece" style="top: 70%; left: 10%;">
   </div>
 
   <script>
-    const board = document.getElementById("puzzle-board");
-    const totalPieces = 6;
-    let placedPieces = 0;
+    const pieces = document.querySelectorAll(".piece");
+    let selectedPiece = null;
+    let offsetX = 0;
+    let offsetY = 0;
 
-    const correctPositions = [
-      { x: 0, y: 0 },
-      { x: 200, y: 0 },
-      { x: 400, y: 0 },
-      { x: 0, y: 200 },
-      { x: 200, y: 200 },
-      { x: 400, y: 200 }
-    ];
+    pieces.forEach(piece => {
+      // Mouse Events
+      piece.addEventListener("mousedown", startDrag);
+      document.addEventListener("mousemove", drag);
+      document.addEventListener("mouseup", endDrag);
 
-    const indexes = [...Array(totalPieces).keys()].sort(() => Math.random() - 0.5);
-
-    indexes.forEach(index => {
-      const img = document.createElement('img');
-      img.src = `pieces/heart${index + 1}.png`;
-      img.classList.add('piece');
-
-      // Random initial positions
-      img.style.left = `${Math.random() * 400}px`;
-      img.style.top = `${Math.random() * 300 + 280}px`;
-
-      img.dataset.correctX = correctPositions[index].x;
-      img.dataset.correctY = correctPositions[index].y;
-
-      makeDraggable(img);
-      board.appendChild(img);
+      // Touch Events
+      piece.addEventListener("touchstart", startDrag, { passive: false });
+      document.addEventListener("touchmove", drag, { passive: false });
+      document.addEventListener("touchend", endDrag);
     });
 
-    function makeDraggable(el) {
-      let offsetX, offsetY, isDragging = false;
+    function startDrag(e) {
+      e.preventDefault();
+      selectedPiece = e.target.closest('.piece');
+      const rect = selectedPiece.getBoundingClientRect();
 
-      el.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
-        el.style.zIndex = 1000;
-      });
+      if (e.type === "mousedown") {
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+      } else if (e.type === "touchstart") {
+        offsetX = e.touches[0].clientX - rect.left;
+        offsetY = e.touches[0].clientY - rect.top;
+      }
 
-      document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-          const boardRect = board.getBoundingClientRect();
-          let x = e.clientX - boardRect.left - offsetX;
-          let y = e.clientY - boardRect.top - offsetY;
+      selectedPiece.style.zIndex = 1000;
+    }
 
-          // Keep it within board
-          x = Math.max(0, Math.min(board.clientWidth - el.clientWidth, x));
-          y = Math.max(0, Math.min(board.clientHeight - el.clientHeight, y));
+    function drag(e) {
+      if (!selectedPiece) return;
 
-          el.style.left = `${x}px`;
-          el.style.top = `${y}px`;
-        }
-      });
+      let clientX, clientY;
 
-      document.addEventListener('mouseup', () => {
-        if (!isDragging) return;
-        isDragging = false;
+      if (e.type === "mousemove") {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      } else if (e.type === "touchmove") {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      }
 
-        const currentX = parseInt(el.style.left);
-        const currentY = parseInt(el.style.top);
-        const correctX = parseInt(el.dataset.correctX);
-        const correctY = parseInt(el.dataset.correctY);
+      selectedPiece.style.position = "absolute";
+      selectedPiece.style.left = `${clientX - offsetX}px`;
+      selectedPiece.style.top = `${clientY - offsetY}px`;
+    }
 
-        if (Math.abs(currentX - correctX) < 40 && Math.abs(currentY - correctY) < 40) {
-          el.style.left = `${correctX}px`;
-          el.style.top = `${correctY}px`;
-          el.style.pointerEvents = "none";
-          el.style.cursor = "default";
-          placedPieces++;
-        }
-
-        if (placedPieces === totalPieces) {
-          document.getElementById("success").style.display = "block";
-        }
-      });
+    function endDrag() {
+      if (selectedPiece) {
+        selectedPiece.style.zIndex = "";
+        selectedPiece = null;
+      }
     }
   </script>
 </body>
