@@ -9,6 +9,7 @@
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
+      overflow-x: hidden;
     }
     h2 {
       margin-top: 30px;
@@ -19,6 +20,7 @@
       height: 600px;
       margin: 20px auto;
       border: 2px dashed #666;
+      touch-action: none;
     }
     .piece {
       position: absolute;
@@ -82,6 +84,7 @@
       img.src = `pieces/heart${index + 1}.png`;
       img.classList.add('piece');
 
+      // Random initial position
       img.style.left = `${Math.random() * 400}px`;
       img.style.top = `${Math.random() * 300 + 280}px`;
 
@@ -95,7 +98,7 @@
     function makeDraggable(el) {
       let offsetX, offsetY, isDragging = false;
 
-      // Mouse Events
+      // MOUSE
       el.addEventListener('mousedown', (e) => {
         isDragging = true;
         offsetX = e.offsetX;
@@ -109,33 +112,27 @@
       });
 
       document.addEventListener('mouseup', () => {
-        if (!isDragging) return;
-        isDragging = false;
-        checkPlacement(el);
+        if (isDragging) stopDragging();
       });
 
-      // Touch Events
+      // TOUCH
       el.addEventListener('touchstart', (e) => {
         isDragging = true;
-        const touch = e.touches[0];
         const rect = el.getBoundingClientRect();
-        offsetX = touch.clientX - rect.left;
-        offsetY = touch.clientY - rect.top;
+        offsetX = e.touches[0].clientX - rect.left;
+        offsetY = e.touches[0].clientY - rect.top;
         el.style.zIndex = 1000;
         e.preventDefault();
-      });
+      }, { passive: false });
 
       document.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
-        const touch = e.touches[0];
-        movePiece(touch.clientX, touch.clientY);
+        movePiece(e.touches[0].clientX, e.touches[0].clientY);
         e.preventDefault();
-      });
+      }, { passive: false });
 
       document.addEventListener('touchend', () => {
-        if (!isDragging) return;
-        isDragging = false;
-        checkPlacement(el);
+        if (isDragging) stopDragging();
       });
 
       function movePiece(clientX, clientY) {
@@ -150,7 +147,17 @@
         el.style.top = `${y}px`;
       }
 
-      function checkPlacement(el) {
+      function stopDragging() {
+        isDragging = false;
+
         const currentX = parseInt(el.style.left);
         const currentY = parseInt(el.style.top);
-        const correctX = par
+        const correctX = parseInt(el.dataset.correctX);
+        const correctY = parseInt(el.dataset.correctY);
+
+        if (Math.abs(currentX - correctX) < 40 && Math.abs(currentY - correctY) < 40) {
+          el.style.left = `${correctX}px`;
+          el.style.top = `${correctY}px`;
+          el.style.pointerEvents = "none";
+          el.style.cursor = "default";
+          p
